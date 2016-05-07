@@ -31,10 +31,10 @@ import com.amazonaws.services.s3.model.AmazonS3Exception;
 import play.Configuration;
 import play.Logger;
 import play.inject.ApplicationLifecycle;
-import play.libs.F;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
+import java.util.concurrent.CompletableFuture;
 
 /**
  * Implementation of {@code AmazonS3Module}.
@@ -116,7 +116,7 @@ public class AmazonS3ModuleImpl implements AmazonS3Module {
         } else {
             throw new RuntimeException("S3Module is not properly configured");
         }
-        lifecycle.addStopHook(() -> F.Promise.pure(null));
+        lifecycle.addStopHook(() -> CompletableFuture.completedFuture(null));
     }
 
     @Override
