@@ -41,7 +41,7 @@ import java.util.UUID;
  * the implementation of a model using the Amazon S3 plugin.
  *
  * @author Thibault Meyer
- * @version 16.03.19
+ * @version 16.06.28
  * @since 16.03.13
  */
 @MappedSuperclass
