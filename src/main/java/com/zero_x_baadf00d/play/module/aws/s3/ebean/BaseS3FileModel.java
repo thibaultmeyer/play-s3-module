@@ -191,6 +191,18 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
     }
 
     /**
+     * Set if this file private or not.
+     *
+     * @param aPrivate {@code true} if private, otherwise, {@code false}
+     * @since 16.03.13
+     */
+    public void setPrivate(final boolean aPrivate) {
+        if (this.id == null) {
+            this.isPrivate = aPrivate;
+        }
+    }
+
+    /**
      * Get the subdirectory where is located the file.
      *
      * @return The subdirectory where the file is located
@@ -246,18 +258,6 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
                 }
             }
             this.objectData = inputStream;
-        }
-    }
-
-    /**
-     * Set if this file private or not.
-     *
-     * @param aPrivate {@code true} if private, otherwise, {@code false}
-     * @since 16.03.13
-     */
-    public void setPrivate(final boolean aPrivate) {
-        if (this.id == null) {
-            this.isPrivate = aPrivate;
         }
     }
 
@@ -345,10 +345,35 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
             objMetaData.setContentType(this.contentType);
             objMetaData.setCacheControl("max-age=315360000, public");
             objMetaData.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
+            try {
+                objMetaData.setContentLength(this.objectData.available());
+            } catch (IOException ex) {
+                Logger.warn("Can't retrieve stream available size", ex);
+            } finally {
+                try {
+                    this.objectData.reset();
+                } catch (IOException ex) {
+                    Logger.error("Can't reset stream position", ex);
+                }
+            }
+            /*
+            try {
+                final byte[] resultByte = DigestUtils.md5(this.objectData);
+                objMetaData.setContentMD5(new String(Base64.encodeBase64(resultByte)));
+            } catch (IOException ex) {
+                Logger.warn("Can't compute stream MD5", ex);
+            } finally {
+                try {
+                    this.objectData.reset();
+                } catch (IOException ex) {
+                    Logger.error("Can't reset stream position", ex);
+                }
+            }*/
 
             // Upload file to S3
             final PutObjectRequest putObjectRequest = new PutObjectRequest(this.bucket, this.getActualFileName(), this.objectData, objMetaData);
             putObjectRequest.withCannedAcl(this.isPrivate ? CannedAccessControlList.Private : CannedAccessControlList.PublicRead);
+
             this.s3module.getService().putObject(putObjectRequest);
             try {
                 if (this.objectData != null) {
