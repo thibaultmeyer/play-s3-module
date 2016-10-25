@@ -69,7 +69,7 @@ public class AmazonS3ModuleImpl implements AmazonS3Module {
     /**
      * @since 16.03.13
      */
-    private static final String AWS_SECRET_KEY = "aws.access.secret";
+    private static final String AWS_SECRET_KEY = "aws.secret.key";
 
     /**
      * Handle on the S3 API client.
