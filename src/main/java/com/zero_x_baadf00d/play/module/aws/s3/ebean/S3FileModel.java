@@ -23,7 +23,7 @@
  */
 package com.zero_x_baadf00d.play.module.aws.s3.ebean;
 
-import com.avaje.ebean.Model;
+import io.ebean.Finder;
 
 import javax.persistence.Entity;
 import javax.persistence.Table;
@@ -33,7 +33,8 @@ import java.util.UUID;
  * This Ebean model represent a file stored on Amazon S3.
  *
  * @author Thibault Meyer
- * @version 16.03.19
+ * @author Pierre Adam
+ * @version 17.01.03
  * @see BaseS3FileModel
  * @since 16.03.13
  */
@@ -46,7 +47,7 @@ public class S3FileModel extends BaseS3FileModel implements Cloneable {
      *
      * @since 16.03.13
      */
-    public static final Model.Finder<UUID, S3FileModel> find = new Finder<>(S3FileModel.class);
+    public static final Finder<UUID, S3FileModel> find = new Finder<>(S3FileModel.class);
 
     /**
      * Clone the current object. ID and name fields will not be cloned.
@@ -58,7 +59,7 @@ public class S3FileModel extends BaseS3FileModel implements Cloneable {
     public S3FileModel clone() {
         try {
             super.clone();
-        } catch (CloneNotSupportedException ignore) {
+        } catch (final CloneNotSupportedException ignore) {
         }
         final S3FileModel s3FileModel = new S3FileModel();
         final StringBuilder newNameBuilder = new StringBuilder();

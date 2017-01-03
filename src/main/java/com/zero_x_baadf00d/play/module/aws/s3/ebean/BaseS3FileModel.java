@@ -24,9 +24,9 @@
 package com.zero_x_baadf00d.play.module.aws.s3.ebean;
 
 import com.amazonaws.services.s3.model.*;
-import com.avaje.ebean.Model;
 import com.fasterxml.uuid.Generators;
 import com.zero_x_baadf00d.play.module.aws.s3.AmazonS3Module;
+import io.ebean.Model;
 import play.Logger;
 import play.Play;
 
@@ -41,7 +41,8 @@ import java.util.UUID;
  * the implementation of a model using the Amazon S3 plugin.
  *
  * @author Thibault Meyer
- * @version 16.06.28
+ * @author Pierre Adam
+ * @version 17.01.03
  * @since 16.03.13
  */
 @MappedSuperclass
@@ -236,7 +237,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
             if (this.objectData != null) {
                 try {
                     this.objectData.close();
-                } catch (IOException ignore) {
+                } catch (final IOException ignore) {
                 }
             }
             this.objectData = new FileInputStream(file);
@@ -254,7 +255,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
             if (this.objectData != null) {
                 try {
                     this.objectData.close();
-                } catch (IOException ignore) {
+                } catch (final IOException ignore) {
                 }
             }
             this.objectData = inputStream;
@@ -294,12 +295,12 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
      * @since 16.03.13
      */
     public String getUrlAsString() {
-        if (id.toString().isEmpty()) {
+        if (this.id.toString().isEmpty()) {
             return null;
         }
         try {
             return new URL(this.getBasePublicUrl() + this.bucket + "/" + this.getActualFileName()).toString();
-        } catch (MalformedURLException e) {
+        } catch (final MalformedURLException e) {
             return null;
         }
     }
@@ -347,12 +348,12 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
             objMetaData.setSSEAlgorithm(ObjectMetadata.AES_256_SERVER_SIDE_ENCRYPTION);
             try {
                 objMetaData.setContentLength(this.objectData.available());
-            } catch (IOException ex) {
+            } catch (final IOException ex) {
                 Logger.warn("Can't retrieve stream available size", ex);
             } finally {
                 try {
                     this.objectData.reset();
-                } catch (IOException ex) {
+                } catch (final IOException ex) {
                     Logger.error("Can't reset stream position", ex);
                 }
             }
@@ -379,7 +380,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
                 if (this.objectData != null) {
                     this.objectData.close();
                 }
-            } catch (IOException ignore) {
+            } catch (final IOException ignore) {
             }
 
             // Save object on database
@@ -402,8 +403,8 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
             throw new RuntimeException("Could not delete");
         } else {
             try {
-                this.s3module.getService().deleteObject(bucket, getActualFileName());
-            } catch (AmazonS3Exception ex) {
+                this.s3module.getService().deleteObject(this.bucket, getActualFileName());
+            } catch (final AmazonS3Exception ex) {
                 Logger.warn("Something goes wrong with Amazon S3", ex);
             }
         }
@@ -421,7 +422,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
         if (this.s3module == null) {
             this.s3module = Play.application().injector().instanceOf(AmazonS3Module.class);
         }
-        final S3Object obj = this.s3module.getService().getObject(bucket, getActualFileName());
+        final S3Object obj = this.s3module.getService().getObject(this.bucket, getActualFileName());
         if (obj != null) {
             return obj.getObjectContent();
         }
