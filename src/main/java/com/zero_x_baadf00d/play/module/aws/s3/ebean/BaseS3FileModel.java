@@ -25,10 +25,9 @@ package com.zero_x_baadf00d.play.module.aws.s3.ebean;
 
 import com.amazonaws.services.s3.model.*;
 import com.fasterxml.uuid.Generators;
-import com.zero_x_baadf00d.play.module.aws.s3.AmazonS3Module;
+import com.zero_x_baadf00d.play.module.aws.s3.PlayS3;
 import io.ebean.Model;
 import play.Logger;
-import play.Play;
 
 import javax.persistence.*;
 import java.io.*;
@@ -38,18 +37,18 @@ import java.util.UUID;
 
 /**
  * This abstract class provides all the necessary foundations for
- * the implementation of a model using the Amazon S3 plugin.
+ * the implementation of a model using the Amazon PlayS3 plugin.
  *
  * @author Thibault Meyer
  * @author Pierre Adam
- * @version 17.01.03
+ * @version 17.02.02
  * @since 16.03.13
  */
 @MappedSuperclass
 public abstract class BaseS3FileModel extends Model implements Cloneable {
 
     /**
-     * The unique ID of the S3 file.
+     * The unique ID of the PlayS3 file.
      *
      * @since 16.03.13
      */
@@ -58,7 +57,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
     protected UUID id;
 
     /**
-     * The human readable name of the S3 file.
+     * The human readable name of the PlayS3 file.
      *
      * @since 16.03.13
      */
@@ -66,7 +65,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
     protected String name;
 
     /**
-     * The content type of the S3 file.
+     * The content type of the PlayS3 file.
      *
      * @since 16.03.13
      */
@@ -75,7 +74,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
 
     /**
      * Temporary object data. Used to upload
-     * object on S3.
+     * object on PlayS3.
      *
      * @since 16.03.13
      */
@@ -106,15 +105,6 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
      */
     @Column(name = "bucket")
     protected String bucket;
-
-    /**
-     * The S3 module instance.
-     *
-     * @see AmazonS3Module
-     * @since 16.03.13
-     */
-    @Transient
-    protected AmazonS3Module s3module;
 
     /**
      * Get the ID of this {@code S3File} entry.
@@ -226,7 +216,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
     }
 
     /**
-     * Set the object to send to S3.
+     * Set the object to send to PlayS3.
      *
      * @param file The file to upload
      * @throws FileNotFoundException If the file does not exist, is a directory rather than a regular file, or for some other reason cannot be opened for reading.
@@ -245,7 +235,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
     }
 
     /**
-     * Set the object to send to S3.
+     * Set the object to send to PlayS3.
      *
      * @param inputStream The data to upload
      * @since 16.03.13
@@ -263,35 +253,20 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
     }
 
     /**
-     * Get the base URL to access S3 uploaded file. This value can be
-     * set on application.conf file.
+     * Get the public URL of this PlayS3 file.
      *
-     * @return The public base URL
-     * @since 16.03.13
-     */
-    protected String getBasePublicUrl() {
-        String basePublicUrl = Play.application().configuration().getString("aws.s3.puburl", "/");
-        if (!basePublicUrl.endsWith("/")) {
-            basePublicUrl += "/";
-        }
-        return basePublicUrl;
-    }
-
-    /**
-     * Get the public URL of this S3 file.
-     *
-     * @return The public URL of this S3 file
+     * @return The public URL of this PlayS3 file
      * @throws MalformedURLException If URL is malformed (check application.conf)
      * @since 16.03.13
      */
     public URL getUrl() throws MalformedURLException {
-        return new URL(this.getBasePublicUrl() + this.bucket + "/" + this.getActualFileName());
+        return new URL(PlayS3.getPublicUrl() + this.bucket + "/" + this.getActualFileName());
     }
 
     /**
-     * Get the public URL of this S3 file as string.
+     * Get the public URL of this PlayS3 file as string.
      *
-     * @return The public URL of this S3 file, otherwise, null
+     * @return The public URL of this PlayS3 file, otherwise, null
      * @since 16.03.13
      */
     public String getUrlAsString() {
@@ -299,7 +274,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
             return null;
         }
         try {
-            return new URL(this.getBasePublicUrl() + this.bucket + "/" + this.getActualFileName()).toString();
+            return new URL(PlayS3.getPublicUrl() + this.bucket + "/" + this.getActualFileName()).toString();
         } catch (final MalformedURLException e) {
             return null;
         }
@@ -319,7 +294,7 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
     }
 
     /**
-     * Save the current object. The file will be uploaded to S3 bucket.
+     * Save the current object. The file will be uploaded to PlayS3 bucket.
      *
      * @since 16.03.13
      */
@@ -328,14 +303,11 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
         if (this.id == null) {
             this.id = Generators.timeBasedGenerator().generate();
         }
-        if (this.s3module == null) {
-            this.s3module = Play.application().injector().instanceOf(AmazonS3Module.class);
-        }
-        if (this.s3module == null) {
-            Logger.error("Could not save S3 file because amazonS3 variable is null");
+        if (!PlayS3.isReady()) {
+            Logger.error("Could not save PlayS3 file because amazonS3 variable is null");
             throw new RuntimeException("Could not save");
         } else {
-            this.bucket = this.s3module.getBucketName();
+            this.bucket = PlayS3.getBucketName();
             if (this.subDirectory == null) {
                 this.subDirectory = "";
             }
@@ -357,25 +329,12 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
                     Logger.error("Can't reset stream position", ex);
                 }
             }
-            /*
-            try {
-                final byte[] resultByte = DigestUtils.md5(this.objectData);
-                objMetaData.setContentMD5(new String(Base64.encodeBase64(resultByte)));
-            } catch (IOException ex) {
-                Logger.warn("Can't compute stream MD5", ex);
-            } finally {
-                try {
-                    this.objectData.reset();
-                } catch (IOException ex) {
-                    Logger.error("Can't reset stream position", ex);
-                }
-            }*/
 
-            // Upload file to S3
+            // Upload file to PlayS3
             final PutObjectRequest putObjectRequest = new PutObjectRequest(this.bucket, this.getActualFileName(), this.objectData, objMetaData);
             putObjectRequest.withCannedAcl(this.isPrivate ? CannedAccessControlList.Private : CannedAccessControlList.PublicRead);
 
-            this.s3module.getService().putObject(putObjectRequest);
+            PlayS3.getAmazonS3().putObject(putObjectRequest);
             try {
                 if (this.objectData != null) {
                     this.objectData.close();
@@ -395,17 +354,14 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
      */
     @PreRemove
     public void deleteRemoteFile() {
-        if (this.s3module == null) {
-            this.s3module = Play.application().injector().instanceOf(AmazonS3Module.class);
-        }
-        if (this.s3module == null) {
-            Logger.error("Could not delete S3 file because amazonS3 variable is null");
+        if (!PlayS3.isReady()) {
+            Logger.error("Could not delete PlayS3 file because amazonS3 variable is null");
             throw new RuntimeException("Could not delete");
         } else {
             try {
-                this.s3module.getService().deleteObject(this.bucket, getActualFileName());
+                PlayS3.getAmazonS3().deleteObject(this.bucket, getActualFileName());
             } catch (final AmazonS3Exception ex) {
-                Logger.warn("Something goes wrong with Amazon S3", ex);
+                Logger.warn("Something goes wrong with Amazon PlayS3", ex);
             }
         }
     }
@@ -419,10 +375,11 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
      * @since 16.03.13
      */
     public InputStream getFileContent() {
-        if (this.s3module == null) {
-            this.s3module = Play.application().injector().instanceOf(AmazonS3Module.class);
+        if (!PlayS3.isReady()) {
+            Logger.error("Could not get PlayS3 file content because amazonS3 variable is null");
+            throw new RuntimeException("Could not get file content");
         }
-        final S3Object obj = this.s3module.getService().getObject(this.bucket, getActualFileName());
+        final S3Object obj = PlayS3.getAmazonS3().getObject(this.bucket, getActualFileName());
         if (obj != null) {
             return obj.getObjectContent();
         }

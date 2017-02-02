@@ -23,33 +23,25 @@
  */
 package com.zero_x_baadf00d.play.module.aws.s3;
 
-import com.amazonaws.services.s3.AmazonS3;
-import com.amazonaws.services.s3.AmazonS3Client;
+import play.api.Configuration;
+import play.api.Environment;
+import play.api.inject.Binding;
+import play.api.inject.Module;
+import scala.collection.Seq;
 
 /**
- * Redis module give access to methods to easily use
- * a Redis database.
+ * Play Framework module entry point. Reference this class in
+ * your {@code application.conf} file to enable Amazon PlayS3 module.
  *
  * @author Thibault Meyer
  * @version 16.03.13
+ * @see Module
  * @since 16.03.13
  */
-public interface AmazonS3Module {
+public final class AmazonS3Module extends Module {
 
-    /**
-     * Get the Amazon S3 service.
-     *
-     * @return The handle to the ready to use {@code AmazonS3} instance
-     * @see AmazonS3
-     * @since 16.03.13
-     */
-    AmazonS3Client getService();
-
-    /**
-     * Get the name of the current bucket.
-     *
-     * @return The bucket name
-     * @since 16.03.13
-     */
-    String getBucketName();
+    @Override
+    public Seq<Binding<?>> bindings(final Environment environment, final Configuration configuration) {
+        return seq(bind(AmazonS3ModuleInitializer.class).toSelf().eagerly());
+    }
 }

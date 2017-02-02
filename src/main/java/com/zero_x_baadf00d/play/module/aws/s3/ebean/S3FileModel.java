@@ -30,7 +30,7 @@ import javax.persistence.Table;
 import java.util.UUID;
 
 /**
- * This Ebean model represent a file stored on Amazon S3.
+ * This Ebean model represent a file stored on Amazon PlayS3.
  *
  * @author Thibault Meyer
  * @author Pierre Adam
