@@ -31,8 +31,6 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <ebean.enhancer.version>10.1.2</ebean.enhancer.version>
-        <ebean.version>10.1.5</ebean.version>
     </properties>
 
     <build>
@@ -51,7 +49,7 @@
             <plugin>
                 <groupId>io.ebean</groupId>
                 <artifactId>ebean-maven-plugin</artifactId>
-                <version>${ebean.enhancer.version}</version>
+                <version>10.1.4</version>
                 <executions>
                     <execution>
                         <id>main</id>
@@ -168,9 +166,24 @@
             <version>3.1.4</version>
         </dependency>
         <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpcore</artifactId>
+            <version>[4.4.6,4.5.0)</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>[4.5.2,4.6.0)</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpclient</artifactId>
+            <version>[4.5.2,4.6.0)</version>
+        </dependency>
+        <dependency>
             <groupId>io.ebean</groupId>
             <artifactId>ebean</artifactId>
-            <version>${ebean.version}</version>
+            <version>10.1.6</version>
             <optional>true</optional>
         </dependency>
         <dependency>

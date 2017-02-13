@@ -19,12 +19,7 @@ Amazon S3 module for Play Framework 2
 
 #### application.conf
 
-    # Play Modules
-    # ~~~~~
-    play.modules.enabled += "com.zero_x_baadf00d.play.module.aws.s3.AmazonS3Module"
-
-
-    # Amazon AWS
+    ## Amazon AWS
     # ~~~~~
     aws {
       authKey = "your-access-key"
@@ -42,9 +37,9 @@ Amazon S3 module for Play Framework 2
       }
     }
 
-    # Ebean
-    # ~~~~~
+    ## Ebean
     # https://github.com/payintech/play-ebean
+    # ~~~~~
     ebean {
       servers {
         default {
