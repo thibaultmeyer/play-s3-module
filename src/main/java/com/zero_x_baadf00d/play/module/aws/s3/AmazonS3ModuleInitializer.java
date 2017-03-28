@@ -41,7 +41,7 @@ import java.util.concurrent.CompletableFuture;
  * Implementation of {@code AmazonS3Module}.
  *
  * @author Thibault Meyer
- * @version 17.02.02
+ * @version 17.03.28
  * @since 16.03.13
  */
 @Singleton
@@ -67,6 +67,7 @@ public final class AmazonS3ModuleInitializer {
         final String endPoint = configuration.getString("aws.s3.endPoint");
         final String signingRegion = configuration.getString("aws.s3.signingRegion");
         final boolean withPathStyle = configuration.getBoolean("aws.s3.withPathStyle", false);
+        final boolean withChunkedEncodingDisabled = configuration.getBoolean("aws.s3.disableChunkedEncoding", false);
         PlayS3.bucketName = configuration.getString("aws.s3.bucketName");
         PlayS3.publicUrl = configuration.getString("aws.s3.publicUrl", "/");
         if (!PlayS3.publicUrl.endsWith("/")) {
@@ -91,6 +92,7 @@ public final class AmazonS3ModuleInitializer {
                 }
             })
             .withPathStyleAccessEnabled(withPathStyle)
+            .withChunkedEncodingDisabled(withChunkedEncodingDisabled)
             .withEndpointConfiguration(
                 new AwsClientBuilder.EndpointConfiguration(endPoint, signingRegion)
             )

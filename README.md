@@ -32,6 +32,7 @@ Amazon S3 module for Play Framework 2
         endPoint = "s3-eu-west-1.amazonaws.com"
         signingRegion = "eu-west-1"
         withPathStyle = false
+        disableChunkedEncoding = false
         bucketName = "your-bucket"
         publicUrl = "https://s3-eu-west-1.amazonaws.com/"
       }
