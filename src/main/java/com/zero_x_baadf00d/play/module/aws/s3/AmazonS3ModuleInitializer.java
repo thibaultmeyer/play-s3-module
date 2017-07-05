@@ -29,7 +29,7 @@ import com.amazonaws.auth.BasicAWSCredentials;
 import com.amazonaws.client.builder.AwsClientBuilder;
 import com.amazonaws.services.s3.AmazonS3ClientBuilder;
 import com.amazonaws.services.s3.model.AmazonS3Exception;
-import play.Configuration;
+import com.typesafe.config.Config;
 import play.Logger;
 import play.inject.ApplicationLifecycle;
 
@@ -41,7 +41,7 @@ import java.util.concurrent.CompletableFuture;
  * Implementation of {@code AmazonS3Module}.
  *
  * @author Thibault Meyer
- * @version 17.03.28
+ * @version 17.07.05
  * @since 16.03.13
  */
 @Singleton
@@ -55,21 +55,30 @@ public final class AmazonS3ModuleInitializer {
      * @since 16.03.13
      */
     @Inject
-    public AmazonS3ModuleInitializer(final ApplicationLifecycle lifecycle, final Configuration configuration) {
-        final String accessKey = configuration.getString(
-            "aws.s3.authKey",
-            configuration.getString("aws.authKey")
-        );
-        final String secretKey = configuration.getString(
-            "aws.s3.authSecret",
-            configuration.getString("aws.authSecret")
-        );
+    public AmazonS3ModuleInitializer(final ApplicationLifecycle lifecycle, final Config configuration) {
+        final String accessKey;
+        final String secretKey;
+
+        if (configuration.hasPath("aws.s3.authKey")) {
+            accessKey = configuration.getString("aws.s3.authKey");
+        } else {
+            accessKey = configuration.getString("aws.authKey");
+        }
+        if (configuration.hasPath("aws.s3.authSecret")) {
+            secretKey = configuration.getString("aws.s3.authSecret");
+        } else {
+            secretKey = configuration.getString("aws.authSecret");
+        }
         final String endPoint = configuration.getString("aws.s3.endPoint");
         final String signingRegion = configuration.getString("aws.s3.signingRegion");
-        final boolean withPathStyle = configuration.getBoolean("aws.s3.withPathStyle", false);
-        final boolean withChunkedEncodingDisabled = configuration.getBoolean("aws.s3.disableChunkedEncoding", false);
+
+        final boolean withPathStyle = configuration.hasPath("aws.s3.withPathStyle")
+            && configuration.getBoolean("aws.s3.withPathStyle");
+        final boolean withChunkedEncodingDisabled = configuration.hasPath("aws.s3.disableChunkedEncoding")
+            && configuration.getBoolean("aws.s3.disableChunkedEncoding");
+
         PlayS3.bucketName = configuration.getString("aws.s3.bucketName");
-        PlayS3.publicUrl = configuration.getString("aws.s3.publicUrl", "/");
+        PlayS3.publicUrl = configuration.hasPath("aws.s3.publicUrl") ? configuration.getString("aws.s3.publicUrl") : "/";
         if (!PlayS3.publicUrl.endsWith("/")) {
             PlayS3.publicUrl += "/";
         }
@@ -99,10 +108,10 @@ public final class AmazonS3ModuleInitializer {
             .build();
         try {
             PlayS3.amazonS3.createBucket(PlayS3.bucketName);
-        } catch (final AmazonS3Exception e) {
-            if (e.getErrorCode().compareTo("BucketAlreadyOwnedByYou") != 0
-                && e.getErrorCode().compareTo("AccessDenied") != 0) {
-                throw e;
+        } catch (final AmazonS3Exception ex) {
+            if (ex.getErrorCode().compareTo("BucketAlreadyOwnedByYou") != 0
+                && ex.getErrorCode().compareTo("AccessDenied") != 0) {
+                throw ex;
             }
         } finally {
             Logger.info("Using PlayS3 Bucket: " + PlayS3.bucketName);
