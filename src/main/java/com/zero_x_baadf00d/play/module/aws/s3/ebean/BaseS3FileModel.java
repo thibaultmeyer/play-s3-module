@@ -324,7 +324,9 @@ public abstract class BaseS3FileModel extends Model implements Cloneable {
                 Logger.warn("Can't retrieve stream available size", ex);
             } finally {
                 try {
-                    this.objectData.reset();
+                    if (this.objectData.markSupported()) {
+                        this.objectData.reset();
+                    }
                 } catch (final IOException ex) {
                     Logger.error("Can't reset stream position", ex);
                 }
