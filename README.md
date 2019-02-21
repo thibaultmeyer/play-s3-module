@@ -1,10 +1,10 @@
 # Play S3 Module
 
 
-[![Latest release](https://img.shields.io/badge/latest_release-19.01-orange.svg)](https://github.com/0xbaadf00d/play-s3-module/releases)
-[![JitPack](https://jitpack.io/v/0xbaadf00d/play-s3-module.svg)](https://jitpack.io/#0xbaadf00d/play-s3-module)
-[![Build](https://img.shields.io/travis-ci/0xbaadf00d/play-s3-module.svg?branch=master&style=flat)](https://travis-ci.org/0xbaadf00d/play-s3-module)
-[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/0xbaadf00d/play-s3-module/master/LICENSE)
+[![Latest release](https://img.shields.io/badge/latest_release-19.01-orange.svg)](https://github.com/thibaultmeyer/play-s3-module/releases)
+[![JitPack](https://jitpack.io/v/thibaultmeyer/play-s3-module.svg)](https://jitpack.io/#thibaultmeyer/play-s3-module)
+[![Build](https://api.travis-ci.org/thibaultmeyer/play-s3-module.svg)](https://travis-ci.org/thibaultmeyer/play-s3-module)
+[![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/thibaultmeyer/play-s3-module/master/LICENSE)
 
 Amazon S3 module for Play Framework 2
 *****
@@ -15,7 +15,7 @@ Amazon S3 module for Play Framework 2
 
      resolvers += "jitpack" at "https://jitpack.io"
 
-     libraryDependencies += "com.github.0xbaadf00d" % "play-s3-module" % "release~YY.MM"
+     libraryDependencies += "com.github.thibaultmeyer" % "play-s3-module" % "release~YY.MM"
 
 #### application.conf
 
@@ -27,7 +27,7 @@ Amazon S3 module for Play Framework 2
       
       # Amazon S3 Plugin
       # ~~~~~
-      # https://github.com/0xbaadf00d/play-s3-module
+      # https://github.com/thibaultmeyer/play-s3-module
       s3 {
         endPoint = "s3-eu-west-1.amazonaws.com"
         signingRegion = "eu-west-1"
@@ -88,4 +88,4 @@ Amazon S3 module for Play Framework 2
 
 
 ## License
-This project is released under terms of the [MIT license](https://raw.githubusercontent.com/0xbaadf00d/play-s3-module/master/LICENSE).
+This project is released under terms of the [MIT license](https://raw.githubusercontent.com/thibaultmeyer/play-s3-module/master/LICENSE).
