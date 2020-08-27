@@ -1,7 +1,7 @@
 # Play S3 Module
 
 
-[![Latest release](https://img.shields.io/badge/latest_release-19.01-orange.svg)](https://github.com/thibaultmeyer/play-s3-module/releases)
+[![Latest release](https://img.shields.io/badge/latest_release-20.08-orange.svg)](https://github.com/thibaultmeyer/play-s3-module/releases)
 [![JitPack](https://jitpack.io/v/thibaultmeyer/play-s3-module.svg)](https://jitpack.io/#thibaultmeyer/play-s3-module)
 [![Build](https://api.travis-ci.org/thibaultmeyer/play-s3-module.svg)](https://travis-ci.org/thibaultmeyer/play-s3-module)
 [![GitHub license](https://img.shields.io/badge/license-MIT-blue.svg)](https://raw.githubusercontent.com/thibaultmeyer/play-s3-module/master/LICENSE)
