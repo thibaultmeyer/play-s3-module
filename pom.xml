@@ -140,7 +140,7 @@
         <dependency>
             <groupId>com.amazonaws</groupId>
             <artifactId>aws-java-sdk-s3</artifactId>
-            <version>1.11.848</version>
+            <version>1.11.1034</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.uuid</groupId>
@@ -150,17 +150,17 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>[4.4.6,4.4.13)</version>
+            <version>[4.4.6,4.4.14)</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpmime</artifactId>
-            <version>[4.5.2,4.5.12)</version>
+            <version>[4.5.2,4.5.13)</version>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>[4.5.2,4.5.12)</version>
+            <version>[4.5.2,4.5.13)</version>
         </dependency>
         <dependency>
             <groupId>io.ebean</groupId>
